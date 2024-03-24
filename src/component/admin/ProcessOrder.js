@@ -19,11 +19,11 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const ProcessOrder = () => {
   const navigate = useNavigate();
-  const {id} = useParams();
+  const { id } = useParams();
   const { order, error, loading } = useSelector((state) => state.orderDetails);
   const { error: updateError, isUpdated } = useSelector((state) => state.order);
   console.log(order);
-
+  console.log("roshnin");
   const updateOrderSubmitHandler = (e) => {
     e.preventDefault();
     const myForm = new FormData();
@@ -70,7 +70,7 @@ const ProcessOrder = () => {
             >
               <div>
                 <div className="confirmshippingArea">
-                  <Typography>Shipping Info</Typography>
+                  <Typography >Shipping Info</Typography>
                   <div className="orderDetailsContainerBox">
                     <div>
                       <p>Name:</p>
@@ -90,44 +90,49 @@ const ProcessOrder = () => {
                       </span>
                     </div>
                   </div>
-                  <Typography>Payment</Typography>
-                  <div className="orderDetailsContainerBox">
-                    <div>
-                      <p
-                        className={
-                          order.paymentInfo &&
-                          order.paymentInfo.status === "succeeded"
-                            ? "greenColor"
-                            : "redColor"
-                        }
-                      >
-                        {order.paymentInfo &&
-                        order.paymentInfo.status === "succeeded"
-                          ? "PAID"
-                          : "NOT PAID"}
-                      </p>
+                  <div className="order-info">
+                   
+                    <div className="orderDetailsContainerBox">
+                    <Typography variant="h4">Payment</Typography>
+                      <div>
+                        <p
+                          className={
+                            order.paymentInfo &&
+                              order.paymentInfo.status === "succeeded"
+                              ? "greenColor"
+                              : "redColor"
+                          }
+                        >
+                          {order.paymentInfo &&
+                            order.paymentInfo.status === "succeeded"
+                            ? "PAID"
+                            : "NOT PAID"}
+                        </p>
+                      </div>
+
+                      <div>
+                        <p>Amount:</p>
+                        <span>{order.totalPrice && order.totalPrice}</span>
+                      </div>
                     </div>
 
-                    <div>
-                      <p>Amount:</p>
-                      <span>{order.totalPrice && order.totalPrice}</span>
+                   
+                    <div className="orderDetailsContainerBox">
+                    <Typography variant="h4" sx={{display:"flex", justifyContent:"center"}}>Order Status</Typography>
+                      <div>
+                        <p
+                          className={
+                            order.orderStatus && order.orderStatus === "Delivered"
+                              ? "greenColor"
+                              : "redColor"
+                          }
+                        >
+                          {order.orderStatus && order.orderStatus}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
-                  <Typography>Order Status</Typography>
-                  <div className="orderDetailsContainerBox">
-                    <div>
-                      <p
-                        className={
-                          order.orderStatus && order.orderStatus === "Delivered"
-                            ? "greenColor"
-                            : "redColor"
-                        }
-                      >
-                        {order.orderStatus && order.orderStatus}
-                      </p>
-                    </div>
-                  </div>
                 </div>
                 <div className="confirmCartItems">
                   <Typography>Your Cart Items:</Typography>

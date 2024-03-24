@@ -4,6 +4,10 @@
     background-color: white;
     position: relative;
   }
+
+  .order-info {
+    display: flex;
+  }
   
   .updateOrderForm > div {
     display: flex;

@@ -19,7 +19,7 @@ import {
         image: data.product.image[0].url,
         stock: data.product.stock,
         quantity,
-        user : user.name
+        user : user ? user.name : 'default'
       },
     }); 
     localStorage.setItem("cartItems", JSON.stringify(getState().card.cartItems));

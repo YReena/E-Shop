@@ -57,7 +57,7 @@ function App() {
     getStripeApiKey();
   }, []);
   return (
-    <div className="">
+    <div className="App">
       <Header2/>
       {/* {isAuthenticated && <UserOption user={user} />} */}
       <Routes>

@@ -15,11 +15,15 @@ const Cart = () => {
   const {user} = useSelector((state)=>state.user);
 
   let ele = [];
-  cartItems.forEach(element => {
+  user && cartItems.forEach(element => {
     if(element.user == user.name){
        ele.push(element);
     }
   });
+  if(cartItems.user == "default"){
+    ele = cartItems;
+  }
+ 
 
   const increaseQuantity = (id, quantity, stock) => {
     const newQty = quantity + 1;

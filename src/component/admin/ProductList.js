@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect } from "react";
-import { DataGrid } from "@material-ui/data-grid";
+import { Table, TableHead, TableRow, TableCell, makeStyles,TableBody , Link, Typography, Paper, IconButton} from '@material-ui/core';
+import { Link as RouterLink } from 'react-router-dom';
 import "./productList.css";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -7,9 +8,9 @@ import {
   getAdminProduct,
   deleteProduct,
 } from "../../actions/productAction";
-import { Link } from "react-router-dom";
+
 import { useAlert } from "react-alert";
-import { Button } from "@material-ui/core";
+
 import MetaData from "../layout/MetaData";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -17,7 +18,53 @@ import SideBar from "./Sidebar";
 import { DELETE_PRODUCT_RESET } from "../../constants/productConstants";
 import { useNavigate } from "react-router-dom";
 
+const useStyles = makeStyles(theme => ({
+  heading: {
+    display: "flex",
+    justifyContent: "center",
+    fontSize: "2vmax",
+    marginTop: "3vmax",
+    color:"#0f589f"
+  },
+  table: {
+    marginTop: theme.spacing(3),
+
+    '& thead th': {
+      fontWeight: '600',
+      color: "white",
+      backgroundColor: theme.palette.primary.light,
+      textAlign:"left"
+
+    },
+    '& tbody td': {
+      fontWeight: '400',
+      textAlign:"left"
+    },
+    '& tbody tr td': {
+      fontWeight: '300',
+      height: '40',
+      textAlign:"left",
+      color:"black"
+    },
+    '& tbody tr:hover': {
+      backgroundColor: '#fffbf2',
+      cursor: 'pointer',
+    },
+  },
+  container: {
+    height: "80vh",
+    width:"100%",
+    display:"flex",
+    justifyContent:"center",
+    backgroundColor:'smoke'
+  },
+  paperpadding :{
+    margin:"1vmax"
+  }
+}));
+
 const ProductList = () => {
+  const classes = useStyles();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -53,90 +100,53 @@ const ProductList = () => {
     dispatch(getAdminProduct());
   }, [dispatch , alert, deleteError,isDeleted, navigate]);
 
-  const columns = [
-    { field: "id", headerName: "Product ID", minWidth: 200, flex: 0.5 },
-
-    {
-      field: "name",
-      headerName: "Name",
-      minWidth: 350,
-      flex: 1,
-    },
-    {
-      field: "stock",
-      headerName: "Stock",
-      type: "number",
-      minWidth: 150,
-      flex: 0.3,
-    },
-
-    {
-      field: "price",
-      headerName: "Price",
-      type: "number",
-      minWidth: 270,
-      flex: 0.5,
-    },
-
-    {
-      field: "actions",
-      flex: 0.3,
-      headerName: "Actions",
-      minWidth: 150,
-      type: "number",
-      sortable: false,
-      renderCell: (params) => {
-        return (
-          <Fragment>
-            <Link to={`/admin/product/${params.id}`}>
-              <EditIcon />
-            </Link>
-
-            <Button
-              onClick={() =>
-                deleteProductHandler(`${params.id}`)
-              }
-            >
-              <DeleteIcon />
-            </Button>
-          </Fragment>
-        );
-      },
-    },
-  ];
-
-  const rows = [];
-
-  products &&
-    products.forEach((item) => {
-      rows.push({
-        id: item._id,
-        stock: item.stock,
-        price: item.price,
-        name: item.name,
-      });
-    });
+  
 
   return (
     <Fragment>
-      <MetaData title={`ALL PRODUCTS - Admin`} />
+    <MetaData title={`ALL PRODUCTS - Admin`} />
 
-      <div className="dashboard">
-        <SideBar />
-        <div className="productListContainer">
-          <h1 id="productListHeading">ALL PRODUCTS</h1>
-
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            pageSize={10}
-            disableSelectionOnClick
-            className="productListTable"
-            autoHeight
-          />
-        </div>
+    <div className="dashboard">
+      <SideBar />
+      <div className="productListContainer">
+        <h1 className={classes.heading}>ALL PRODUCTS</h1>
+        <Paper elevation={2} sx={{width:"100%"}} className={classes.paperpadding}>
+            <Table aria-label="simple table" className={classes.table}>
+              <TableHead className={classes.table}>
+                <TableRow>
+                  <TableCell align="right">Product ID</TableCell>
+                  <TableCell align="right">Name</TableCell>
+                  <TableCell align="right">Price</TableCell>
+                  <TableCell align="right">Stock</TableCell>
+                  <TableCell align="right">Edit</TableCell>
+                  <TableCell align="right">Delete</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {products && products.map((product, idx) => (
+                  <TableRow key={idx}>
+                    <TableCell align="right">{product._id}</TableCell>
+                    <TableCell align="right">{product.name}</TableCell>
+                    <TableCell align="right">{product.price}</TableCell>
+                    <TableCell align="right">{product.stock}</TableCell>
+                    <TableCell align="right">
+                      <Link variant="inherit" underline="none" component={RouterLink } sx={{ display: "flex" }} to={`/admin/product/${product._id}`}>
+                        <Typography sx={{ paddingLeft: 0.4, paddingTop: 0.7 }}><b><EditIcon/></b></Typography>
+                      </Link>
+                    </TableCell>
+                    <TableCell align="right">
+                      <Link variant="inherit" underline="none" component={RouterLink } sx={{ display: "flex" , color:"red"}}>
+                        <IconButton  onClick={()=>{deleteProductHandler(product._id)}}><DeleteIcon color="error"/></IconButton>
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Paper>
       </div>
-    </Fragment>
+    </div>
+  </Fragment>
   );
 };
 

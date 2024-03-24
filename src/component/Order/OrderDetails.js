@@ -3,14 +3,31 @@ import "./OrderDetails.css";
 import { useSelector, useDispatch } from "react-redux";
 import MetaData from "../layout/MetaData";
 import { Link } from "react-router-dom";
-import { Typography } from "@material-ui/core";
 import { getOrderDetails, clearErrors } from "../../actions/orderAction";
 import Loader from "../layout/Loader/Loader";
 import { useAlert } from "react-alert";
 import { useParams } from "react-router-dom";
+import { makeStyles, Box, Typography, Card, CardMedia,CardActions, CardContent,Button} from "@material-ui/core";
 
-const OrderDetails = ({ match }) => {
-  const {id} = useParams();
+
+const useStyles = makeStyles(theme => ({
+  heading: {
+    display: "flex",
+    justifyContent: "center",
+    fontSize: "2vmax",
+    marginTop: "1.5vmax"
+  },
+  container: {
+    height: "80vh",
+    width: "100%",
+  }
+
+
+}));
+
+const OrderDetails = () => {
+  const classes = useStyles();
+  const { id } = useParams();
   const { order, error, loading } = useSelector((state) => state.orderDetails);
 
   const dispatch = useDispatch();
@@ -23,7 +40,7 @@ const OrderDetails = ({ match }) => {
     }
 
     dispatch(getOrderDetails(id));
-  }, [dispatch, alert, error,id]);
+  }, [dispatch, alert, error, id]);
   return (
     <Fragment>
       {loading ? (
@@ -31,89 +48,32 @@ const OrderDetails = ({ match }) => {
       ) : (
         <Fragment>
           <MetaData title="Order Details" />
-          <div className="orderDetailsPage">
-            <div className="orderDetailsContainer">
-              <Typography component="h1">
-                Order #{order && order._id}
-              </Typography>
-              <Typography>Shipping Info</Typography>
-              <div className="orderDetailsContainerBox">
-                <div>
-                  <p>Name:</p>
-                  <span>{order.user && order.user.name}</span>
-                </div>
-                <div>
-                  <p>Phone:</p>
-                  <span>
-                    {order.shippingInfo && order.shippingInfo.phoneNo}
-                  </span>
-                </div>
-                <div>
-                  <p>Address:</p>
-                  <span>
-                    {order.shippingInfo &&
-                      `${order.shippingInfo.address}, ${order.shippingInfo.city}, ${order.shippingInfo.state}, ${order.shippingInfo.pinCode}, ${order.shippingInfo.country}`}
-                  </span>
-                </div>
-              </div>
-              <Typography>Payment</Typography>
-              <div className="orderDetailsContainerBox">
-                <div>
-                  <p
-                    className={
-                      order.paymentInfo &&
-                      order.paymentInfo.status === "succeeded"
-                        ? "greenColor"
-                        : "redColor"
-                    }
-                  >
-                    {order.paymentInfo &&
-                    order.paymentInfo.status === "succeeded"
-                      ? "PAID"
-                      : "NOT PAID"}
-                  </p>
-                </div>
+          <div className={classes.container}>
+            <Typography className={classes.heading}>Order Details Order #</Typography>
 
-                <div>
-                  <p>Amount:</p>
-                  <span>{order.totalPrice && order.totalPrice}</span>
-                </div>
-              </div>
+            
+              <Card sx={{ maxWidth: 345 }}>
+                <CardMedia
+                  sx={{ height: 140 }}
+                  image="/static/images/cards/contemplative-reptile.jpg"
+                  title="green iguana"
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    Lizard
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Lizards are a widespread group of squamate reptiles, with over 6,000
+                    species, ranging across all continents except Antarctica
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button size="small">Share</Button>
+                  <Button size="small">Learn More</Button>
+                </CardActions>
+              </Card>
+            
 
-              <Typography>Order Status</Typography>
-              <div className="orderDetailsContainerBox">
-                <div>
-                  <p
-                    className={
-                      order.orderStatus && order.orderStatus === "Delivered"
-                        ? "greenColor"
-                        : "redColor"
-                    }
-                  >
-                    {order.orderStatus && order.orderStatus}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="orderDetailsCartItems">
-              <Typography>Order Items:</Typography>
-              <div className="orderDetailsCartItemsContainer">
-                {order.orderItems &&
-                  order.orderItems.map((item) => (
-                    <div key={item.product}>
-                      <img src={item.image} alt="Product" />
-                      <Link to={`/product/${item.product}`}>
-                        {item.name}
-                      </Link>{" "}
-                      <span>
-                        {item.quantity} X ₹{item.price} ={" "}
-                        <b>₹{item.price * item.quantity}</b>
-                      </span>
-                    </div>
-                  ))}
-              </div>
-            </div>
           </div>
         </Fragment>
       )}

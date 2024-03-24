@@ -16,7 +16,6 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import ListAltIcon from '@material-ui/icons/ListAlt';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import SpaceDashboardIcon from '@mui/icons-material/SpaceDashboard';
 import HomeIcon from '@mui/icons-material/Home';
@@ -49,6 +48,7 @@ const Navbar = () => {
     const navigate = useNavigate();
     const { cartItems } = useSelector((state) => state.card);
     const { isAuthenticated, user } = useSelector((state) => state.user);
+    const { loading, error, orders } = useSelector((state) => state.myOrders);
 
     let ele = [];
     {
@@ -59,9 +59,14 @@ const Navbar = () => {
                 }
             });
     }
+    if(cartItems.user='default'){
+        ele = cartItems;
+    }
+
+   console.log(ele);
 
     useEffect(() => {
-
+       
     }, [navigate, isAuthenticated, user]);
 
     const [avatar, setAvatar] = useState("/Profile.png");
@@ -94,6 +99,13 @@ const Navbar = () => {
                             <Badge badgeContent={ele.length} color="error">
                                 <ShoppingCartIcon />
                                 <Typography sx={{ paddingLeft: 0.4 }}><b>Cart</b></Typography>
+                            </Badge>
+
+                        </Link>
+                        <Link variant="inherit" underline="none" component={RouterLink} sx={{ display: "flex" }} to='/orders'>
+                            <Badge badgeContent={orders && orders.length} color="error">
+                                <ShoppingCartIcon />
+                                <Typography sx={{ paddingLeft: 0.4 }}><b>MyOrders</b></Typography>
                             </Badge>
 
                         </Link>

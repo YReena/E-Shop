@@ -1,10 +1,9 @@
 import React, { Fragment, useEffect } from "react";
-import { DataGrid } from "@material-ui/data-grid";
+import { Link as RouterLink } from 'react-router-dom';
+import { Table, TableHead, TableRow, TableCell, makeStyles,TableBody , Link, Typography, Paper, IconButton} from '@material-ui/core'
 import "./productList.css";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
 import { useAlert } from "react-alert";
-import { Button } from "@material-ui/core";
 import MetaData from "../layout/MetaData";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -13,10 +12,55 @@ import { getAllUsers, clearErrors, deleteUser } from "../../actions/userAction";
 import { DELETE_USER_RESET } from "../../constants/userConstant";
 import { useNavigate, useParams } from "react-router-dom";
 
+const useStyles = makeStyles(theme => ({
+  heading: {
+    display: "flex",
+    justifyContent: "center",
+    fontSize: "2vmax",
+    marginTop: "3vmax",
+    color:"#0f589f"
+  },
+  table: {
+    marginTop: theme.spacing(3),
+
+    '& thead th': {
+      fontWeight: '600',
+      color: "white",
+      backgroundColor: theme.palette.primary.light,
+      textAlign:"left"
+
+    },
+    '& tbody td': {
+      fontWeight: '400',
+      textAlign:"left"
+    },
+    '& tbody tr td': {
+      fontWeight: '300',
+      height: '40',
+      textAlign:"left",
+      color:"black"
+    },
+    '& tbody tr:hover': {
+      backgroundColor: '#fffbf2',
+      cursor: 'pointer',
+    },
+  },
+  container: {
+    height: "80vh",
+    width:"100%",
+    display:"flex",
+    justifyContent:"center",
+    backgroundColor:'smoke'
+  },
+  paperpadding :{
+    margin:"1vmax"
+  }
+}));
+
 const UsersList = () => {
+  const classes = useStyles();
   const dispatch = useDispatch();
   const {id} = useParams();
-  console.log(id);
   const alert = useAlert();
   const navigate = useNavigate();
 
@@ -52,94 +96,51 @@ const UsersList = () => {
     dispatch(getAllUsers());
   }, [dispatch, alert, error, deleteError, navigate, isDeleted, message]);
 
-  const columns = [
-    { field: "id", headerName: "User ID", minWidth: 180, flex: 0.8 },
-
-    {
-      field: "email",
-      headerName: "Email",
-      minWidth: 200,
-      flex: 1,
-    },
-    {
-      field: "name",
-      headerName: "Name",
-      minWidth: 150,
-      flex: 0.5,
-    },
-
-    {
-      field: "role",
-      headerName: "Role",
-      type: "number",
-      minWidth: 150,
-      flex: 0.3,
-      cellClassName: (params) => {
-        return params.getValue(params.id, "role") === "admin"
-          ? "greenColor"
-          : "redColor";
-      },
-    },
-
-    {
-      field: "actions",
-      flex: 0.3,
-      headerName: "Actions",
-      minWidth: 150,
-      type: "number",
-      sortable: false,
-      renderCell: (params) => {
-        return (
-          <Fragment>
-            <Link to={`/admin/user/${params.id}`}>
-              <EditIcon />
-            </Link>
-
-            <Button
-              onClick={() =>
-                deleteUserHandler(`${params.id}`)
-              }
-            >
-              <DeleteIcon />
-            </Button>
-          </Fragment>
-        );
-      },
-    },
-  ];
-
-  const rows = [];
-
-  users &&
-    users.forEach((item) => {
-      rows.push({
-        id: item._id,
-        role: item.role,
-        email: item.email,
-        name: item.name,
-      });
-    });
-
   return (
     <Fragment>
-      <MetaData title={`ALL USERS - Admin`} />
+    <MetaData title={`ALL USERS - Admin`} />
 
-      <div className="dashboard">
-        <SideBar />
-        <div className="productListContainer">
-          <h1 id="productListHeading">ALL USERS</h1>
-
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            pageSize={10}
-            disableSelectionOnClick
-            className="productListTable"
-            autoHeight
-          />
-        </div>
+    <div className="dashboard">
+      <SideBar />
+      <div className="productListContainer">
+        <h1 className={classes.heading}>ALL USERS</h1>
+        <Paper elevation={2} sx={{width:"100%"}} className={classes.paperpadding}>
+            <Table aria-label="simple table" className={classes.table}>
+              <TableHead className={classes.table}>
+                <TableRow>
+                  <TableCell align="right">User ID</TableCell>
+                  <TableCell align="right">Name</TableCell>
+                  <TableCell align="right">Email</TableCell>
+                  <TableCell align="right">Role</TableCell>
+                  <TableCell align="right">Edit</TableCell>
+                  <TableCell align="right">Delete</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {users && users.map((user, idx) => (
+                  <TableRow key={idx}>
+                    <TableCell align="right">{user._id}</TableCell>
+                    <TableCell align="right">{user.name}</TableCell>
+                    <TableCell align="right">{user.email}</TableCell>
+                    <TableCell align="right">{user.role}</TableCell>
+                    <TableCell align="right">
+                      <Link variant="inherit" underline="none" component={RouterLink } sx={{ display: "flex" }} to={`/admin/user/${user._id}`}>
+                        <Typography sx={{ paddingLeft: 0.4, paddingTop: 0.7 }}><b><EditIcon/></b></Typography>
+                      </Link>
+                    </TableCell>
+                    <TableCell align="right">
+                      <Link variant="inherit" underline="none" component={RouterLink } sx={{ display: "flex" , color:"red"}}>
+                        <IconButton  onClick={()=>{deleteUserHandler(user._id)}}><DeleteIcon color="error"/></IconButton>
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Paper>
       </div>
-    </Fragment>
+    </div>
+  </Fragment>
   );
 };
 
